@@ -94,7 +94,7 @@ const admin_id = 6270618135;
 
 const admin_id2 = 6270618135;
 
-var mongo_url = 'mongodb+srv://fire_162:<password>@cluster0.sb4c9ys.mongodb.net/?retryWrites=true&w=majority'; // Your Mongo URL Here
+var mongo_url = 'mongodb+srv://fire_162:fire_162@cluster0.sb4c9ys.mongodb.net/?retryWrites=true&w=majority'; // Your Mongo URL Here
 
 const buttonsLimit = {
 
