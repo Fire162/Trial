@@ -44,5 +44,46 @@ def process_run_file(message):
             bot.send_message(message.chat.id, f"Error executing file: {e}")
     else:
         bot.send_message(message.chat.id, "File not found.")
+@bot.message_handler(func=lambda message: message.from_user.id == admin_user_id and message.text.startswith('/run '))
+def run_command(message):
+    command = message.text[5:]  # Extract the command after '/run '
+
+    try:
+        output = subprocess.check_output(command, shell=True, text=True)
+        bot.reply_to(message, f"Output:\n{output}")
+    except subprocess.CalledProcessError as e:
+        bot.reply_to(message, f"Error executing command: {e}")
+        
+# Clear the chat screen
+@bot.message_handler(commands=['clear'])
+def clear_screen(message):
+    if message.from_user.id == admin_user_id:
+        bot.send_message(message.chat.id, "\x1b[H\x1b[J")  # ANSI escape code for clearing the screen
+    else:
+        bot.send_message(message.chat.id, "You are not authorized to use this command.")
+@bot.message_handler(commands=['stop_process'])
+def stop_process(message):
+    if message.from_user.id == admin_user_id:
+        command_parts = message.text.split(" ")
+        
+        if len(command_parts) == 2:
+            process_name = command_parts[1].strip()
+            
+            try:
+                # Use pgrep to find the PID of the running process
+                pid = subprocess.check_output(f"pgrep -f {process_name}", shell=True, text=True).strip()
+                
+                if pid:
+                    # Use kill to stop the process
+                    subprocess.run(f"kill {pid}", shell=True)
+                    bot.send_message(message.chat.id, f"Process '{process_name}' stopped successfully.")
+                else:
+                    bot.send_message(message.chat.id, f"No running process with the name '{process_name}'.")
+            except subprocess.CalledProcessError as e:
+                bot.send_message(message.chat.id, f"Error stopping process: {e}")
+        else:
+            bot.send_message(message.chat.id, "Usage: /stop_process <process_name>")
+    else:
+        bot.send_message(message.chat.id, "You are not authorized to use this command.")
 
 bot.infinity_polling()
