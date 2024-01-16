@@ -20,7 +20,7 @@ def process_file_save(message):
     file_path = file_info.file_path
 
     downloaded_file = bot.download_file(file_path)
-    file_name = f"{file_path.split('/')[-1]}"
+    file_name = message.document.file_name  # Use the user-provided file name
     with open(file_name, 'wb') as new_file:
         new_file.write(downloaded_file)
 
