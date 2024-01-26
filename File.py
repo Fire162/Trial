@@ -85,5 +85,23 @@ def stop_process(message):
             bot.send_message(message.chat.id, "Usage: /stop_process <process_name>")
     else:
         bot.send_message(message.chat.id, "You are not authorized to use this command.")
+@bot.message_handler(commands=['get_file'])
+def get_file(message):
+    if message.from_user.id == admin_user_id:
+        bot.send_message(message.chat.id, "Enter the name of the file to send:")
+        bot.register_next_step_handler(message, process_get_file)
+    else:
+        bot.send_message(message.chat.id, "You are not authorized to use this command.")
 
+def process_get_file(message):
+    file_name = message.text
+    if os.path.exists(file_name):
+        try:
+            with open(file_name, 'rb') as file:
+                bot.send_document(message.chat.id, file)
+        except Exception as e:
+            bot.send_message(message.chat.id, f"Error sending file: {e}")
+    else:
+        bot.send_message(message.chat.id, "File not found.")
+        
 bot.infinity_polling()
